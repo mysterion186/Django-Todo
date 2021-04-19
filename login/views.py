@@ -6,7 +6,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse 
 from django.core.mail import EmailMessage
 from .forms import CustomUserCreationForm, CustomUserChangePassword
-from .models import MyUser
+from .models import MyUser,MyUserManager
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
@@ -21,7 +21,6 @@ def home(request):
 #login page
 def user_login(request):
     if request.POST :
-        print(request)
         email = request.POST.get("email") 
         password = request.POST.get("password")
         user = authenticate(email = email, password = password)
@@ -35,6 +34,7 @@ def user_login(request):
 def user_logout(request):
     logout(request) 
     return HttpResponseRedirect(reverse('login:home'))
+
 #register page
 def user_register(request):
     form = CustomUserCreationForm(request.POST)
@@ -86,5 +86,48 @@ def update_password(request):
         form = CustomUserChangePassword(request.user)
     return render(request,'login/change_password.html',{'form':form})
 
+#temp page to say that the password has been changed
 def changed_password(request):
     return render(request,'login/changed.html')
+
+#reset a forgotten password
+@login_required
+def email_reset_password(request):
+    if request.POST:
+        email = request.POST.get("email")
+        try :
+            user = MyUser.objects.get(email=email)
+        except:
+            return HttpResponse("Compte n'existe pas") 
+        
+        current_site = get_current_site(request)
+        email_subject = 'Modification de votre mot de passe '
+        message = render_to_string('login/reset_password_real.html',
+                {'user':user,'domain':current_site,
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),})
+        to_email = email
+        email = EmailMessage(email_subject,message,to =[to_email])
+        email.send()
+        return HttpResponse("On vous a envoyé un email, cliquez sur le lien pour terminer votre inscription ")
+    return render(request,"login/reset_password.html")
+
+#activate account
+def reset_password(request, uidb64, token):
+    try:
+        uid = force_bytes(urlsafe_base64_decode(uidb64))
+        user = MyUser.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, MyUser.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        if request.POST:
+            password1 = request.POST.get("password1")
+            password2 = request.POST.get("password2")
+            if password1 == password2:
+                user.set_password(password2)
+                user.save()
+            return HttpResponse('Your account has been activate successfully')
+        else :
+            return render(request,'login/reset_slug_password.html')
+    else:
+        return HttpResponse('Activation link is invalid!')
