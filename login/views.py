@@ -1,20 +1,24 @@
 from django.shortcuts import render 
+from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout,update_session_auth_hash
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse 
 from django.core.mail import EmailMessage
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangePassword
 from .models import MyUser
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 
+#home page
 def home(request):
     return render(request,'home.html')
-
+#login page
 def user_login(request):
     if request.POST :
         print(request)
@@ -27,11 +31,11 @@ def user_login(request):
             return HttpResponseRedirect(reverse('login:home'))
         return render(request,'login/login.html')
     return render(request,'login/login.html')
-
+#logout page
 def user_logout(request):
     logout(request) 
     return HttpResponseRedirect(reverse('login:home'))
-
+#register page
 def user_register(request):
     form = CustomUserCreationForm(request.POST)
     if form.is_valid():
@@ -51,6 +55,7 @@ def user_register(request):
         form = CustomUserCreationForm()
     return render(request,'login/register.html',{'form':form})
 
+#activate account
 def activate_account(request, uidb64, token):
     try:
         uid = force_bytes(urlsafe_base64_decode(uidb64))
@@ -64,3 +69,22 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Your account has been activate successfully')
     else:
         return HttpResponse('Activation link is invalid!')
+    
+#change password
+@login_required
+def update_password(request):
+    if request.method =='POST':
+        form = CustomUserChangePassword(request.user,request.POST)
+        if form.is_valid() :
+            user = form.save()
+            update_session_auth_hash(request,user)
+            messages.success(request,'Your password was successfully updated !')
+            return HttpResponseRedirect(reverse('login:changed_password'))
+        else :
+            messages.error(request,'Please correct the error below.')
+    else :
+        form = CustomUserChangePassword(request.user)
+    return render(request,'login/change_password.html',{'form':form})
+
+def changed_password(request):
+    return render(request,'login/changed.html')
