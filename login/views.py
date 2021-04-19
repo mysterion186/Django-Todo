@@ -38,7 +38,9 @@ def user_register(request):
         user = form.save()
         current_site = get_current_site(request)
         email_subject = 'Activation de votre compte'
-        message = render_to_string('activate_account.html',{'user':user,'domain':current_site,'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+        message = render_to_string('login/activate_account.html',
+                {'user':user,'domain':current_site,
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': account_activation_token.make_token(user),})
         to_email = form.cleaned_data.get('email')
         email = EmailMessage(email_subject,message,to =[to_email])
