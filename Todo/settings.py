@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-#choiw autofield
+#choix autofield
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -102,6 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 #choix d'utilisateur par défaut 
 AUTH_USER_MODEL = 'login.MyUser'
 

@@ -14,7 +14,8 @@ def user_login(request):
         email = request.POST.get("email") 
         password = request.POST.get("password")
         user = authenticate(email = email, password = password)
-        if user is not None :
+        #check if the user exists and if it's account is active
+        if user is not None and user.is_active :
             login(request,user)
             return HttpResponseRedirect(reverse('login:home'))
         return render(request,'login/login.html')
@@ -28,7 +29,7 @@ def user_register(request):
     form = CustomUserCreationForm(request.POST)
     if form.is_valid():
         user = form.save()
-        
+
         return HttpResponseRedirect(reverse('login:home'))
     else :
         form = CustomUserCreationForm()

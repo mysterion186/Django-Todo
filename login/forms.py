@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 class CustomUserCreationForm(UserCreationForm):
+    #think I neek to add extrafields here and the main parts go into the Meta
     password1 = forms.CharField(widget = forms.PasswordInput())
     password2 = forms.CharField(widget = forms.PasswordInput())
     class Meta(UserCreationForm):
