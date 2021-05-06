@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>création de post selon l'utilisateur (si tous se passe bien)</h1>
+    {% if user.is_authenticated %}
+    <form  method="POST">
+        {% csrf_token %}
+        <label for="title">title</label>
+        <input type="text" name="title" placeholder="Enter Email">
+
+        <label for="infos">infos</label>
+        <input type="textarea" name="infos" id="">
+        <input type="submit" value="enregistrer" name="Login">
+    </form>
+    {% else %}
+        <h1>Please login </h1>
+    {% endif %}
+</body>
+</html>
