@@ -1,9 +1,11 @@
 from django.shortcuts import render 
 from django.contrib import messages
+
 #pour envoyer des mails : 
 from django.contrib.sites.shortcuts import get_current_site 
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import get_template # charger une page html
+from Todo import settings
 #permet de gérer tout ce qui est en rapport avec la connexion/déconnexion de l'utilisateur
 from django.contrib.auth import authenticate, login, logout,update_session_auth_hash
 #affichage de page selon la situation 
@@ -18,6 +20,7 @@ from .tokens import account_activation_token
 
 #formulaire pour que les gens puissent s'enregistrer
 from .forms import CustomUserCreationForm, CustomUserChangePassword
+
 #import du modèle d'utilisateur que l'on a créé
 from .models import MyUser
 
@@ -62,7 +65,7 @@ def user_register(request):
         # to_email = form.cleaned_data.get('email')
         # email = EmailMessage(email_subject,message,to =[to_email])
         # email.send()
-        subject, from_email, to = 'Activation de votre compte', 'julien.ravindrarasa@gmail.com', 'julien.ravindrarasa@gmail.com'
+        subject, from_email, to = 'Activation de votre compte', settings.EMAIL_HOST_USER, form.cleaned_data.get('email')
         text_content = ''
         # = render_to_string("login/activate_account.html")#'<p>This is an <strong>important</strong> message.</p>'
         html_content = f"Hi {user.username}\nPlease click on the link to confirm your registration http://{get_current_site(request)}/{account_activation_token.make_token(user)}\n<p  style='color: blue;' >Test couleur bleue</p>"

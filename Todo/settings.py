@@ -135,7 +135,7 @@ EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'julien.ravindrarasa@gmail.com'
-EMAIL_HOST_PASSWORD = 'Noisiel18677'
+EMAIL_HOST_PASSWORD = 'Mypassword'
 EMAIL_PORT = 587
 
 LOGIN_REDIRECT_URL = 'home'
