@@ -26,10 +26,3 @@ class CustomUserChangePassword(PasswordChangeForm):
         model = MyUser
         fields = ('old_password','new_password1','new_password2') 
     
-"""class CustomUserChangePassword(PasswordChangeForm):
-    old_password = forms.CharField(widget = forms.PasswordInput())
-    new_password1 = forms.CharField(widget = forms.PasswordInput())
-    new_password2 = forms.CharField(widget = forms.PasswordInput())
-    class Meta:
-        model = MyUser
-        fields = ('old_password','new_password1','new_password2') """

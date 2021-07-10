@@ -1,19 +1,28 @@
 from django.shortcuts import render 
 from django.contrib import messages
+#pour envoyer des mails : 
 from django.contrib.sites.shortcuts import get_current_site 
+from django.core.mail import EmailMessage
+#permet de gérer tout ce qui est en rapport avec la connexion/déconnexion de l'utilisateur
 from django.contrib.auth import authenticate, login, logout,update_session_auth_hash
+#affichage de page selon la situation 
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponse 
-from django.core.mail import EmailMessage
-from .forms import CustomUserCreationForm, CustomUserChangePassword
-from .models import MyUser,MyUserManager
-from django.template.loader import render_to_string
+
+from django.template.loader import render_to_string #convertit une page html en mail pour envoyer le lien d'activation 
+#création d'outil pour créer/décoder des ine time link
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
+
+#formulaire pour que les gens puissent s'enregistrer
+from .forms import CustomUserCreationForm, CustomUserChangePassword
+#import du modèle d'utilisateur que l'on a créé
+from .models import MyUser
+
+
 from django.contrib.auth.decorators import login_required
 
-# Create your views here.
 
 #home page
 def home(request):
@@ -30,6 +39,7 @@ def user_login(request):
             return HttpResponseRedirect(reverse('login:home'))
         return render(request,'login/login.html')
     return render(request,'login/login.html')
+
 #logout page
 def user_logout(request):
     logout(request) 
@@ -40,6 +50,7 @@ def user_register(request):
     form = CustomUserCreationForm(request.POST)
     if form.is_valid():
         user = form.save()
+        #partie pour l'envoie d'un email d'activation 
         current_site = get_current_site(request)
         email_subject = 'Activation de votre compte'
         message = render_to_string('login/activate_account.html',
@@ -53,6 +64,7 @@ def user_register(request):
         return HttpResponse("On vous a envoyé un email, cliquez sur le lien pour terminer votre inscription ")
     else :
         form = CustomUserCreationForm()
+   
     return render(request,'login/register.html',{'form':form})
 
 #activate account
@@ -91,17 +103,16 @@ def changed_password(request):
     return render(request,'login/changed.html')
 
 #reset a forgotten password
-@login_required
 def email_reset_password(request):
     if request.POST:
         email = request.POST.get("email")
+        #on vérifie qu'un compte avec cette adresse mail existe
         try :
             user = MyUser.objects.get(email=email)
         except:
             return HttpResponse("Compte n'existe pas") 
-        
         current_site = get_current_site(request)
-        email_subject = 'Modification de votre mot de passe '
+        email_subject = 'Réinitilisation de votre mot de passe '
         message = render_to_string('login/reset_password_real.html',
                 {'user':user,'domain':current_site,
                 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
