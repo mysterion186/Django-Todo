@@ -7,4 +7,5 @@ urlpatterns = [
     path("create/", views.create_todo, name = "create-todos"),
     path("<int:pk>/delete/",views.delete_todo,name = "delete-todos"),
     path("<int:pk>/update/",views.update_todo,name = "update-todos"),
+    path("send-mail/",views.send_all_email,name = "email"),
 ]

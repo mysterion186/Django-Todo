@@ -1,9 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect 
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
 from . import models
 from login import models as lg 
+from Todo import settings
+
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+
 # Create your views here.
 #  display all user's todo
 def liste(request):
@@ -39,4 +43,21 @@ def update_todo(request,pk):
     # display the "form" for updating the todo
     else : 
         return render(request,'Todos/update.html',{"post":post}) 
-    
+
+#test pour envoyer des emails généralisé
+def send_all_email(request):
+    queryset = lg.MyUser.objects.all() #on prend tous les emails présent dans la base de données 
+    to = []
+    for mail in queryset : 
+        to.append(mail)
+    # on s'attend à recevoir un post request pour envoyer les emails à tous le monde 
+    if request.POST :
+        # on choppe le sujet et le texte de l'email à envoyer
+        subject = request.POST.get("subject")
+        email = request.POST.get("email")  
+        from_email = settings.EMAIL_HOST_USER
+        msg = EmailMultiAlternatives(subject, '', from_email, to)
+        msg.attach_alternative(email, "text/html")
+        msg.send()
+        return HttpResponse("On a envoyé l'email à tous les membres de la base de données ")
+    return render(request,"general_email.html")
