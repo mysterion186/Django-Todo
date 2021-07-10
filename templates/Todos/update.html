@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Page pour modifier un todo  </h1>
+    <h2>Welcome @{{request.user.username}}</h2>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="Title">
+            Title
+        </label>
+        <input type="text" name="Title" id="" value="{{post.title}}">
+        <label for="info">
+            infos
+        </label>
+        <input type="text" name="info" id="" value="{{ post.infos}}">
+        <input type="submit" name="" id="" value="envoyer">
+    </form>
+</body>
+</html>

@@ -1,5 +1,19 @@
-{% autoescape off %}
+<!DOCTYPE html>
+<head>
+</head>
+<body>
+    {% autoescape off %}
+Hi {{ user.username }},
+Please click on the link to confirm your registration,
+<div style="color: blue;">Test</div>
+http://{{ domain }}{% url 'login:activate' uidb64=uid token=token %}
+
+<h1>Partie avec le test de la couleur </h1>
 Hi {{ user.username }},
 Please click on the link [depuis template, dans le sous dossier login] to confirm your registration,
+<p  style="color: blue;">Test couleur bleue</p>
 http://{{ domain }}{% url 'login:activate' uidb64=uid token=token %}
 {% endautoescape %}
+</body>
+</html>
+ 

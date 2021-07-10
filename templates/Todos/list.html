@@ -10,13 +10,17 @@
     <h1>Page qui va afficher tous les todos </h1>
     <h2>Welcome @{{request.user.username}}</h2>
     {% for list in all_list %}
-        {{list.title}}
-        <br>
-        {{list.infos}}
-        <br>
-        {{list.user}}
-        <br>
-        <p></p>
+        {% if list.user == request.user %}
+            
+            {{list.title}}
+            pk = {{list.pk}}
+            <br>
+            {{list.infos}} <a href="{% url 'todos:update-todos' pk=list.pk%}">mettre à jour </a> | <a href="{% url 'todos:delete-todos' pk=list.pk%}">supprimer</a>
+            <br>
+            {{list.user}} 
+            <br>
+            <p></p>
+        {% endif %}
     {% endfor %}
 </body>
 </html>

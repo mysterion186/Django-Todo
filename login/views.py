@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.contrib import messages
 #pour envoyer des mails : 
 from django.contrib.sites.shortcuts import get_current_site 
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.template.loader import get_template # charger une page html
 #permet de gérer tout ce qui est en rapport avec la connexion/déconnexion de l'utilisateur
 from django.contrib.auth import authenticate, login, logout,update_session_auth_hash
 #affichage de page selon la situation 
@@ -51,20 +52,26 @@ def user_register(request):
     if form.is_valid():
         user = form.save()
         #partie pour l'envoie d'un email d'activation 
-        current_site = get_current_site(request)
-        email_subject = 'Activation de votre compte'
-        message = render_to_string('login/activate_account.html',
-                {'user':user,'domain':current_site,
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),})
-        to_email = form.cleaned_data.get('email')
-        email = EmailMessage(email_subject,message,to =[to_email])
-        email.send()
-        # return HttpResponseRedirect(reverse('login:home'))
+        # current_site = get_current_site(request)
+        # email_subject = 'Activation de votre compte'
+        # message = render_to_string('login/activate_account.html',
+        #         {'user':user,'domain':current_site,
+        #         'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+        #         'token': account_activation_token.make_token(user),})
+
+        # to_email = form.cleaned_data.get('email')
+        # email = EmailMessage(email_subject,message,to =[to_email])
+        # email.send()
+        subject, from_email, to = 'Activation de votre compte', 'julien.ravindrarasa@gmail.com', 'julien.ravindrarasa@gmail.com'
+        text_content = ''
+        # = render_to_string("login/activate_account.html")#'<p>This is an <strong>important</strong> message.</p>'
+        html_content = f"Hi {user.username}\nPlease click on the link to confirm your registration http://{get_current_site(request)}/{account_activation_token.make_token(user)}\n<p  style='color: blue;' >Test couleur bleue</p>"
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         return HttpResponse("On vous a envoyé un email, cliquez sur le lien pour terminer votre inscription ")
     else :
         form = CustomUserCreationForm()
-   
     return render(request,'login/register.html',{'form':form})
 
 #activate account

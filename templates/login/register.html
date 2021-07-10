@@ -7,7 +7,7 @@
     <title>Login page</title>
 </head>
 <body>
-    <h1>Register page</h1>
+    <h1 style="color: blue;">Register page</h1>
     <form  method="POST">
         {% csrf_token %}
         email : {{ form.email}}
@@ -18,7 +18,7 @@
         <br>
         password : {{ form.password2 }}
         <br>
-        <button type="submit" class="btn btn-primary">Sign Up</button>
+        <input type="submit" name="" value="Envoyer" id="">
     </form>
 
 </html>
